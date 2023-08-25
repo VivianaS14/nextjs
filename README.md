@@ -8,3 +8,4 @@ Simple page to know router, and layouts.
 
 Simple Pokedex, styled with nextui, consuming api with axios, understanding static props and paths.
 (SSG) -> Static Site Generation.
+(ISR) -> Incremental Site Regeneration
