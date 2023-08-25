@@ -114,16 +114,29 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths,
-    fallback: false,
+    // fallback: false,
+    fallback: "blocking", // -> Incremental side regeneration
   };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { name } = params as { name: string };
 
+  const pokemon = await getPokemon(name);
+
+  if (!pokemon) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+  //pokemon de prueba -> #300 - skitty
+
   return {
     props: {
-      pokemon: await getPokemon(name),
+      pokemon,
     },
   };
 };
