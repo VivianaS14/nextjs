@@ -3,7 +3,8 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { Roboto } from "next/font/google";
 
-import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { darkTheme, lightTheme } from "@/themes";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -12,15 +13,9 @@ const roboto = Roboto({
   display: "swap",
 });
 
-const basicTheme = createTheme({
-  palette: {
-    mode: "dark",
-  },
-});
-
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ThemeProvider theme={basicTheme}>
+    <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <main className={roboto.className}>
         <Component {...pageProps} />
