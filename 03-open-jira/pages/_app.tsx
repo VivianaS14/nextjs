@@ -5,6 +5,7 @@ import { Roboto } from "next/font/google";
 
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { darkTheme, lightTheme } from "@/themes";
+import { UIProvider } from "@/context/ui";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -15,11 +16,13 @@ const roboto = Roboto({
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <main className={roboto.className}>
-        <Component {...pageProps} />
-      </main>
-    </ThemeProvider>
+    <UIProvider>
+      <ThemeProvider theme={darkTheme}>
+        <CssBaseline />
+        <main className={roboto.className}>
+          <Component {...pageProps} />
+        </main>
+      </ThemeProvider>
+    </UIProvider>
   );
 }
