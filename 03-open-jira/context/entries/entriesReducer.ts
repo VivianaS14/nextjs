@@ -1,13 +1,13 @@
 import { EntriesState } from ".";
 
-type entriesActionType = { type: "entries - ActionName" };
+type entriesActionType = { type: "[Entries] - ActionName" };
 
 export const entriesReducer = (
   state: EntriesState,
   action: entriesActionType
 ) => {
   switch (action.type) {
-    case "entries - ActionName":
+    case "[Entries] - ActionName":
       return {
         ...state,
       };
