@@ -1,13 +1,15 @@
 import { ChangeEvent, useState, useContext } from "react";
+
+import { EntriesContext } from "@/context/entries";
+import { UIContext } from "@/context/ui";
+
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import SaveIcon from "@mui/icons-material/Save";
 import { Box, Button, TextField } from "@mui/material";
-import { EntriesContext } from "@/context/entries";
 
 export const NewEntry = () => {
   const { addNewEntry } = useContext(EntriesContext);
-
-  const [isAdding, setIsAdding] = useState(false);
+  const { isAddingNewEntry, setIsAddingEntry } = useContext(UIContext);
 
   const [entryValue, setEntryValue] = useState("");
   const [touched, setTouched] = useState(false);
@@ -24,7 +26,7 @@ export const NewEntry = () => {
   };
 
   const onCancel = () => {
-    setIsAdding(false);
+    setIsAddingEntry(false);
     setTouched(false);
     setEntryValue("");
   };
@@ -36,7 +38,7 @@ export const NewEntry = () => {
         px: 4,
       }}
     >
-      {isAdding ? (
+      {isAddingNewEntry ? (
         <>
           <TextField
             label="New Entry"
@@ -72,7 +74,7 @@ export const NewEntry = () => {
           variant="outlined"
           startIcon={<AddCircleIcon />}
           fullWidth
-          onClick={() => setIsAdding(true)}
+          onClick={() => setIsAddingEntry(true)}
         >
           Add Pending
         </Button>
