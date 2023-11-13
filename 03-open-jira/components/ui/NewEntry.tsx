@@ -1,10 +1,14 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState, useContext } from "react";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import SaveIcon from "@mui/icons-material/Save";
 import { Box, Button, TextField } from "@mui/material";
+import { EntriesContext } from "@/context/entries";
 
 export const NewEntry = () => {
+  const { addNewEntry } = useContext(EntriesContext);
+
   const [isAdding, setIsAdding] = useState(false);
+
   const [entryValue, setEntryValue] = useState("");
   const [touched, setTouched] = useState(false);
 
@@ -15,7 +19,8 @@ export const NewEntry = () => {
   const onSave = () => {
     if (entryValue.trim() === "") return;
 
-    console.log({ entryValue });
+    addNewEntry(entryValue);
+    onCancel();
   };
 
   const onCancel = () => {
