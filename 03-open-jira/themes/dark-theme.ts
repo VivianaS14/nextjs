@@ -4,8 +4,11 @@ import { red } from "@mui/material/colors";
 export const darkTheme = createTheme({
   palette: {
     mode: "dark",
+    primary: {
+      main: "#AB77AF",
+    },
     secondary: {
-      main: "#c5e0dc",
+      main: "#F67E93",
     },
     error: {
       main: red.A400,
@@ -19,7 +22,7 @@ export const darkTheme = createTheme({
       },
       styleOverrides: {
         root: {
-          backgroundColor: "#e08e79",
+          backgroundColor: "#AB77AF",
         },
       },
     },

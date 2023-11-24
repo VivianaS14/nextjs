@@ -5,4 +5,14 @@ export interface Entry {
   status: EntryStatus;
 }
 
-export type EntryStatus = "pending" | "in-progress" | "finished";
+export type EntryStatus = string;
+
+export interface Columns {
+  [key: string]: Column;
+}
+
+export interface Column {
+  id: number;
+  title: string;
+  entriesIds: string[];
+}

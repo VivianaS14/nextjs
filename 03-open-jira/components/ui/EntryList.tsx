@@ -1,15 +1,22 @@
 import { FC, useContext, useMemo } from "react";
-import { List, Paper } from "@mui/material";
+import dynamic from "next/dynamic";
+
+import { List, Paper, Stack } from "@mui/material";
 
 import { EntriesContext } from "@/context/entries";
 import { EntryStatus } from "@/interfaces";
-import { EntryCard } from ".";
+
+import { Droppable } from "react-beautiful-dnd";
+
+const EntryCard = dynamic(() => import("@/components/ui/EntryCard"), {
+  ssr: false,
+});
 
 interface Props {
-  status: EntryStatus;
+  status: string;
 }
 
-export const EntryList: FC<Props> = ({ status }) => {
+const EntryList: FC<Props> = ({ status }) => {
   const { entries } = useContext(EntriesContext);
 
   // Solamente se debe ejecutar cuando las entries cambien
@@ -20,23 +27,31 @@ export const EntryList: FC<Props> = ({ status }) => {
   );
 
   return (
-    // TODO: haremos drop
-    <div>
-      <Paper
-        sx={{
-          height: "calc(100vh - 250px)",
-          overflow: "auto",
-          bgcolor: "transparent",
-          p: "2px 5px",
-        }}
-      >
-        {/* TODO: cambiar si hace drag */}
-        <List sx={{ opacity: 1 }}>
-          {entriesByStatus.map((entry) => (
-            <EntryCard key={entry._id} entry={entry} />
-          ))}
-        </List>
-      </Paper>
-    </div>
+    <Droppable droppableId={status}>
+      {(provided) => (
+        <Stack
+          sx={{
+            height: "calc(100vh - 250px)",
+            overflow: "auto",
+            p: "2px 5px",
+          }}
+          {...provided.droppableProps}
+          ref={provided.innerRef}
+        >
+          <List sx={{ opacity: 1 }}>
+            {entriesByStatus.map((entry, index) => (
+              <EntryCard
+                key={entry._id.toString()}
+                entry={entry}
+                index={index}
+              />
+            ))}
+            {provided.placeholder}
+          </List>
+        </Stack>
+      )}
+    </Droppable>
   );
 };
+
+export default EntryList;

@@ -34,7 +34,8 @@ export const NewEntry = () => {
   return (
     <Box
       sx={{
-        mb: 3,
+        mt: 2,
+        mb: 4,
         px: 4,
       }}
     >
@@ -73,8 +74,9 @@ export const NewEntry = () => {
         <Button
           variant="outlined"
           startIcon={<AddCircleIcon />}
-          fullWidth
           onClick={() => setIsAddingEntry(true)}
+          color="secondary"
+          fullWidth
         >
           Add Pending
         </Button>
