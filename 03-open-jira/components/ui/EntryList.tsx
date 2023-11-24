@@ -28,12 +28,14 @@ const EntryList: FC<Props> = ({ status }) => {
 
   return (
     <Droppable droppableId={status}>
-      {(provided) => (
+      {(provided, { isDraggingOver }) => (
         <Stack
           sx={{
             height: "calc(100vh - 250px)",
             overflow: "auto",
             p: "2px 5px",
+            bgcolor: isDraggingOver ? "#474546" : "transparent",
+            borderRadius: 2,
           }}
           {...provided.droppableProps}
           ref={provided.innerRef}

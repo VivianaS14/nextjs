@@ -8,7 +8,7 @@ export const darkTheme = createTheme({
       main: "#AB77AF",
     },
     secondary: {
-      main: "#F67E93",
+      main: "#c299a0",
     },
     error: {
       main: red.A400,

@@ -20,11 +20,11 @@ interface Props {
 const EntryCard: FC<Props> = ({ entry, index }) => {
   return (
     <Draggable draggableId={entry._id.toString()} index={index}>
-      {(provided) => (
+      {(provided, { isDragging }) => (
         <CardActionArea sx={{ mb: 1 }}>
           <Card
             sx={{
-              bgcolor: "#59365c",
+              bgcolor: isDragging ? "#754a85" : "#59365c",
             }}
             ref={provided.innerRef}
             {...provided.draggableProps}

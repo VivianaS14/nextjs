@@ -76,7 +76,6 @@ export const NewEntry = () => {
           startIcon={<AddCircleIcon />}
           onClick={() => setIsAddingEntry(true)}
           color="secondary"
-          fullWidth
         >
           Add Pending
         </Button>

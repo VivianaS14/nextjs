@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 
-import { useContext, useMemo, useState, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Card, CardHeader, Grid } from "@mui/material";
 
 import { Layout } from "@/components/layouts";
@@ -9,7 +9,7 @@ import { NewEntry } from "@/components/ui";
 import { EntriesContext } from "@/context/entries";
 
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
-import { Column, Columns, Entry } from "@/interfaces";
+import { Column, Entry } from "@/interfaces";
 
 const EntryList = dynamic(() => import("@/components/ui/EntryList"), {
   ssr: false,
@@ -19,7 +19,6 @@ const HomePage: NextPage = () => {
   const { entries, columns, setColumns, setEntries } =
     useContext(EntriesContext);
 
-  // 117
   const onDragEnd = ({ source, destination }: DropResult) => {
     // If user tries to drop in an unknown destination
     if (!destination) return;
@@ -107,11 +106,11 @@ const HomePage: NextPage = () => {
               <Grid item xs={12} sm={4} key={col.id}>
                 <Card
                   sx={{
-                    height: "calc(100vh - 100px)",
+                    height: "calc(100vh - 200px)",
+                    borderRadius: 3,
                   }}
                 >
                   <CardHeader title={col.title} />
-
                   <EntryList status={col.title.toLowerCase()} />
                 </Card>
               </Grid>
