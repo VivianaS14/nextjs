@@ -10,56 +10,7 @@ export interface EntriesState {
 }
 
 const Entries_INITIAL_STATE: EntriesState = {
-  entries: [
-    {
-      _id: uuidv4(),
-      description:
-        "Investigar sobre la historia del arte moderno para el proyecto de historia del arte..",
-      createdAt: Date.now(),
-      status: "pending",
-    },
-    {
-      _id: uuidv4(),
-      description:
-        "Preparar un informe sobre las tendencias actuales en el mercado digital.",
-      createdAt: Date.now(),
-      status: "pending",
-    },
-    {
-      _id: uuidv4(),
-      description:
-        "Organizar la presentación para el próximo evento de la empresa.",
-      createdAt: Date.now(),
-      status: "pending",
-    },
-    {
-      _id: uuidv4(),
-      description:
-        "Revisar y mejorar el plan de marketing para el próximo trimestre..",
-      createdAt: Date.now(),
-      status: "pending",
-    },
-    {
-      _id: uuidv4(),
-      description:
-        "Realizar pruebas de rendimiento para la nueva función del sitio web.",
-      createdAt: Date.now() - 1000000,
-      status: "in-progress",
-    },
-    {
-      _id: uuidv4(),
-      description:
-        "Escribir un artículo para el blog sobre las últimas innovaciones tecnológicas.",
-      createdAt: Date.now() - 1000000,
-      status: "in-progress",
-    },
-    {
-      _id: uuidv4(),
-      description: "Coordinar la logística para el próximo viaje de negocios.",
-      createdAt: Date.now() - 100000,
-      status: "finished",
-    },
-  ],
+  entries: [],
   columns: {
     pending: {
       id: 0,
