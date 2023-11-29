@@ -1,8 +1,9 @@
-import { useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import { Columns, Entry } from "@/interfaces";
 import { EntriesContext, entriesReducer } from "./";
+import { jiraApi } from "@/api";
 
 export interface EntriesState {
   entries: Entry[];
@@ -37,14 +38,17 @@ export const EntriesProvider = ({
 }) => {
   const [state, dispatch] = useReducer(entriesReducer, Entries_INITIAL_STATE);
 
-  const addNewEntry = (description: string) => {
-    const newEntry: Entry = {
-      _id: uuidv4(),
-      description,
-      createdAt: Date.now(),
-      status: "pending",
-    };
-    dispatch({ type: "[Entry] Add-Entry", payload: newEntry });
+  const addNewEntry = async (description: string) => {
+    const { data } = await jiraApi.post<Entry>("/entries", { description });
+    dispatch({ type: "[Entry] Add-Entry", payload: data });
+  };
+
+  const updateEntry = async (id: string, status: string) => {
+    try {
+      await jiraApi.put<Entry>(`/entries/${id}`, { status });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const setColumns = (
@@ -70,15 +74,25 @@ export const EntriesProvider = ({
     dispatch({ type: "[Column] Set-Columns", payload: newColumns });
   };
 
-  const setEntries = (newEntries: Entry[]) => {
+  const setEntries = async (newEntries: Entry[]) => {
     dispatch({ type: "[Entries] Set-Entries", payload: newEntries });
   };
+
+  const refreshEntries = async () => {
+    const { data } = await jiraApi.get<Entry[]>("/entries");
+    setEntries(data);
+  };
+
+  useEffect(() => {
+    refreshEntries();
+  }, []);
 
   return (
     <EntriesContext.Provider
       value={{
         ...state,
         addNewEntry,
+        updateEntry,
         setColumns,
         setEntries,
       }}

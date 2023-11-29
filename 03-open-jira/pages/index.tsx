@@ -16,9 +16,13 @@ const EntryList = dynamic(() => import("@/components/ui/EntryList"), {
 });
 
 const HomePage: NextPage = () => {
-  const { entries, columns, setColumns, setEntries } =
+  const { entries, columns, setColumns, setEntries, updateEntry } =
     useContext(EntriesContext);
 
+  console.log({ entries });
+
+  // TODO: crear modelo para la base de datos de las columnas
+  // TODO: Modificar como se muestran las columnas, que sea por el orden de los ids en cada columna
   const onDragEnd = ({ source, destination }: DropResult) => {
     // If user tries to drop in an unknown destination
     if (!destination) return;
@@ -57,6 +61,7 @@ const HomePage: NextPage = () => {
     const startColIds = Array.from(sourceCol.entriesIds);
     const [removed] = startColIds.splice(source.index, 1);
     const [changedEntry] = entries.filter((entry) => entry._id === removed);
+    updateEntry(changedEntry._id, destination.droppableId);
 
     const endColIds = Array.from(destinationCol.entriesIds);
     endColIds.splice(destination.index, 0, removed);

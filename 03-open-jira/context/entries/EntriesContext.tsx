@@ -7,6 +7,7 @@ interface ContextProps {
 
   // Methods
   addNewEntry: (description: string) => void;
+  updateEntry: (id: string, status: string) => void;
   setColumns: (
     pendingIds: string[],
     processIds: string[],

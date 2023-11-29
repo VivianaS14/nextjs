@@ -1,0 +1,1 @@
+export { jiraApi } from "./entriesApi";

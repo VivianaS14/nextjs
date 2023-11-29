@@ -1,5 +1,5 @@
 import { db, seedData } from "@/database";
-import { Jira } from "@/models";
+import { Jira, Entry } from "@/models";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
@@ -17,9 +17,11 @@ export default async function handler(
   await db.connect();
 
   // Peticiones a la base de datos
-  await Jira.deleteMany();
-  await Jira.insertMany(seedData);
-  // 132
+  // await Jira.deleteMany();
+  // await Jira.insertMany(seedData);
+  await Entry.deleteMany();
+  await Entry.insertMany(seedData);
+
   await db.disconnect();
 
   res.status(200).json({ message: "Done" });
