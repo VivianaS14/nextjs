@@ -19,8 +19,6 @@ const HomePage: NextPage = () => {
   const { entries, columns, setColumns, setEntries, updateEntry } =
     useContext(EntriesContext);
 
-  console.log({ entries });
-
   // TODO: crear modelo para la base de datos de las columnas
   // TODO: Modificar como se muestran las columnas, que sea por el orden de los ids en cada columna
   const onDragEnd = ({ source, destination }: DropResult) => {
