@@ -14,16 +14,19 @@ const EntryCard = dynamic(() => import("@/components/ui/EntryCard"), {
 
 interface Props {
   status: string;
+  order: string[];
 }
 
-const EntryList: FC<Props> = ({ status }) => {
+const EntryList: FC<Props> = ({ status, order }) => {
   const { entries } = useContext(EntriesContext);
 
   // Solamente se debe ejecutar cuando las entries cambien
   const entriesByStatus = useMemo(
-    () => entries.filter((entry) => entry.status === status),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [entries]
+    () =>
+      order
+        .map((id) => entries.find((entry) => entry._id === id))
+        .filter(Boolean),
+    [entries, order]
   );
 
   return (
@@ -42,11 +45,7 @@ const EntryList: FC<Props> = ({ status }) => {
         >
           <List sx={{ opacity: 1 }}>
             {entriesByStatus.map((entry, index) => (
-              <EntryCard
-                key={entry._id.toString()}
-                entry={entry}
-                index={index}
-              />
+              <EntryCard key={entry?._id} entry={entry} index={index} />
             ))}
             {provided.placeholder}
           </List>
