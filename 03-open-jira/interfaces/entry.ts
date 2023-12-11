@@ -12,7 +12,8 @@ export interface Columns {
 }
 
 export interface Column {
-  id: number;
+  _id: string;
+  columnId: number;
   title: string;
   entriesIds: string[];
 }

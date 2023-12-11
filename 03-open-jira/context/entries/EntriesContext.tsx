@@ -1,4 +1,4 @@
-import { Columns, Entry } from "@/interfaces";
+import { Column, Columns, Entry } from "@/interfaces";
 import { createContext } from "react";
 
 interface ContextProps {
@@ -8,12 +8,9 @@ interface ContextProps {
   // Methods
   addNewEntry: (description: string) => void;
   updateEntry: (id: string, status: string) => void;
-  setColumns: (
-    pendingIds: string[],
-    processIds: string[],
-    finishedIds: string[]
-  ) => void;
+  setColumns: (colId: string, entriesIds: string[]) => void;
   setEntries: (newEntries: Entry[]) => void;
+  refreshColumns: () => void;
 }
 
 export const EntriesContext = createContext({} as ContextProps);

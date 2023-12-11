@@ -1,5 +1,5 @@
-import { db, seedData } from "@/database";
-import { Jira, Entry } from "@/models";
+import { db, seedData, seedColumns, seedJira } from "@/database";
+import { Entry, Column, Jira } from "@/models";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
@@ -18,9 +18,20 @@ export default async function handler(
 
   // Peticiones a la base de datos
   // await Jira.deleteMany();
-  // await Jira.insertMany(seedData);
+  // await Jira.insertMany(seedJira);
+
   await Entry.deleteMany();
   await Entry.insertMany(seedData);
+
+  await Column.deleteMany();
+  // Arreglo de objetos que coinciden  con el esquema
+  const columnsToInsert = Object.values(seedColumns).map((column) => ({
+    columnId: column.columnId,
+    title: column.title,
+    entriesIds: column.entriesIds,
+  }));
+
+  await Column.insertMany(columnsToInsert);
 
   await db.disconnect();
 

@@ -1,7 +1,7 @@
 import { useEffect, useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-import { Columns, Entry } from "@/interfaces";
+import { Column, Columns, Entry } from "@/interfaces";
 import { EntriesContext, entriesReducer } from "./";
 import { jiraApi } from "@/api";
 
@@ -12,23 +12,7 @@ export interface EntriesState {
 
 const Entries_INITIAL_STATE: EntriesState = {
   entries: [],
-  columns: {
-    pending: {
-      id: 0,
-      title: "Pending",
-      entriesIds: [],
-    },
-    "in-progress": {
-      id: 1,
-      title: "In-progress",
-      entriesIds: [],
-    },
-    finished: {
-      id: 2,
-      title: "Finished",
-      entriesIds: [],
-    },
-  },
+  columns: {},
 };
 
 export const EntriesProvider = ({
@@ -51,27 +35,25 @@ export const EntriesProvider = ({
     }
   };
 
-  const setColumns = (
-    pendingIds: string[],
-    processIds: string[],
-    finishedIds: string[]
-  ) => {
-    const newColumns = {
-      pending: {
-        ...state.columns.pending,
-        entriesIds: pendingIds,
-      },
-      "in-progress": {
-        ...state.columns["in-progress"],
-        entriesIds: processIds,
-      },
-      finished: {
-        ...state.columns.finished,
-        entriesIds: finishedIds,
-      },
+  const setColumns = async (colId: string, entriesIds: string[]) => {
+    const index = Object.values(state.columns).findIndex(
+      (c: Column) => c._id === colId
+    );
+
+    const cols: Columns = {
+      ...state.columns,
+      [index]: { ...state.columns[index], entriesIds },
     };
 
-    dispatch({ type: "[Column] Set-Columns", payload: newColumns });
+    dispatch({ type: "[Column] Set-Columns", payload: cols });
+
+    try {
+      await jiraApi.put<Column>(`/columns/${colId}`, {
+        entriesIds,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const setEntries = async (newEntries: Entry[]) => {
@@ -83,9 +65,21 @@ export const EntriesProvider = ({
     setEntries(data);
   };
 
+  const refreshColumns = async () => {
+    const { data } = await jiraApi.get<Columns>("/columns");
+    dispatch({ type: "[Column] Set-Columns", payload: data });
+  };
+
   useEffect(() => {
     refreshEntries();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (state.entries.length > 0) {
+      refreshColumns();
+    }
+  }, [state.entries]);
 
   return (
     <EntriesContext.Provider
@@ -95,6 +89,7 @@ export const EntriesProvider = ({
         updateEntry,
         setColumns,
         setEntries,
+        refreshColumns,
       }}
     >
       {children}

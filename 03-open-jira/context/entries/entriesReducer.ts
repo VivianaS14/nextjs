@@ -17,16 +17,16 @@ export const entriesReducer = (
         entries: [...state.entries, action.payload],
       };
 
-    case "[Column] Set-Columns":
-      return {
-        ...state,
-        columns: action.payload,
-      };
-
     case "[Entries] Set-Entries":
       return {
         ...state,
         entries: action.payload,
+      };
+
+    case "[Column] Set-Columns":
+      return {
+        ...state,
+        columns: action.payload,
       };
 
     default:
