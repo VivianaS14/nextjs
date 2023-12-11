@@ -26,7 +26,7 @@ export default function handler(
       return getEntry(req, res);
 
     default:
-      return res.status(400).json({ message: "Method doesn't exist" });
+      return res.status(400).json({ message: "Method does not exist" });
   }
 }
 

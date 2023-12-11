@@ -39,7 +39,7 @@ const postEntry = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const newEntry = new Entry({
     description,
     createdAt: Date.now(),
-    status: "pending",
+    status: "Pending",
   });
 
   try {
