@@ -1,1 +1,1 @@
-export { jiraApi } from "./entriesApi";
+export { jiraApi, apiUrls } from "./entriesApi";

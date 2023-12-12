@@ -17,3 +17,14 @@ export interface Column {
   title: string;
   entriesIds: string[];
 }
+
+export interface ColumnUpdate {
+  columnId: string;
+  entriesIds: string[];
+}
+
+export interface EntryUpdate {
+  description: string;
+  status: string;
+  entryId: string;
+}
