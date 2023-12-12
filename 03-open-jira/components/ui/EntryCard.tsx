@@ -1,5 +1,8 @@
 import { Entry } from "@/interfaces";
+
 import { FC } from "react";
+import { Draggable } from "react-beautiful-dnd";
+
 import {
   Card,
   CardActionArea,
@@ -7,10 +10,16 @@ import {
   CardContent,
   Typography,
   Stack,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
+import {
+  Edit as EditIcon,
+  DeleteForever as DeleteIcon,
+} from "@mui/icons-material";
 
-import { Draggable } from "react-beautiful-dnd";
-import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import { getTimeAgo } from "@/utils/date";
+import { useRouter } from "next/router";
 
 interface Props {
   entry?: Entry;
@@ -18,6 +27,12 @@ interface Props {
 }
 
 const EntryCard: FC<Props> = ({ entry, index }) => {
+  const router = useRouter();
+
+  const onEdit = () => {
+    router.push(`/entries/${entry!._id}`);
+  };
+
   return (
     entry && (
       <Draggable draggableId={entry._id.toString()} index={index}>
@@ -32,19 +47,32 @@ const EntryCard: FC<Props> = ({ entry, index }) => {
               {...provided.dragHandleProps}
             >
               <CardContent>
+                <Typography variant="subtitle2" color="#c299a0" mb={1}>
+                  {entry.status}
+                </Typography>
                 <Typography sx={{ whiteSpace: "pre-line" }}>
                   {entry.description}
                 </Typography>
               </CardContent>
 
               <CardActions
-                sx={{ display: "flex", justifyContent: "space-between", pr: 2 }}
+                sx={{ display: "flex", justifyContent: "space-between" }}
               >
-                <Typography variant="subtitle2" color="#c299a0">
-                  {entry.status.charAt(0).toUpperCase() +
-                    entry.status.substring(1)}
+                <Typography variant="body2" color="#c299a0">
+                  {getTimeAgo(entry.createdAt)}
                 </Typography>
-                <Typography variant="body2">Hace 30 minutos</Typography>
+                <Stack direction="row">
+                  <Tooltip title="Edit">
+                    <IconButton aria-label="Edit" size="small" onClick={onEdit}>
+                      <EditIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete">
+                    <IconButton aria-label="Delete" size="small">
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
               </CardActions>
             </Card>
           </CardActionArea>
