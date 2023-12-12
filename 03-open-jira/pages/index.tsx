@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import dynamic from "next/dynamic";
 
 import { useContext, useEffect, useState } from "react";
-import { Card, CardHeader, Grid } from "@mui/material";
+import { Card, CardHeader, CircularProgress, Grid, Stack } from "@mui/material";
 
 import { Layout } from "@/components/layouts";
 import { NewEntry } from "@/components/ui";
@@ -24,8 +24,16 @@ const HomePage: NextPage = () => {
   const [entries, setEntries] = useState<Entry[]>();
   const [columns, setColumns] = useState<Columns>();
 
-  const { data: dbEntries, refetch: refetchEntries } = useGetEntries();
-  const { data: dbColumns, refetch: refetchColumns } = useGetColumns();
+  const {
+    data: dbEntries,
+    refetch: refetchEntries,
+    isLoading: isLoadingEntries,
+  } = useGetEntries();
+  const {
+    data: dbColumns,
+    refetch: refetchColumns,
+    isLoading: isLoadingColumns,
+  } = useGetColumns();
 
   const { mutate: updateEntry } = useUpdateEntry();
   const { mutate: updateColumn } = useUpdateColumn();
@@ -122,14 +130,20 @@ const HomePage: NextPage = () => {
     <>
       <Layout title="Home - OpenJira">
         <DragDropContext onDragEnd={onDragEnd}>
-          {columns && (
-            <NewEntry
-              column={
-                Object.values(columns).find((col) => col.title === "Pending")!
-              }
-              refetchColumns={refetchColumns}
-              refetchEntries={refetchEntries}
-            />
+          {isLoadingColumns || isLoadingEntries ? (
+            <Stack>
+              <CircularProgress />
+            </Stack>
+          ) : (
+            columns && (
+              <NewEntry
+                column={
+                  Object.values(columns).find((col) => col.title === "Pending")!
+                }
+                refetchColumns={refetchColumns}
+                refetchEntries={refetchEntries}
+              />
+            )
           )}
           <Grid container spacing={4}>
             {columns &&
@@ -142,11 +156,7 @@ const HomePage: NextPage = () => {
                     }}
                   >
                     <CardHeader title={col.title} />
-                    <EntryList
-                      status={col.title}
-                      order={col.entriesIds}
-                      entries={entries}
-                    />
+                    <EntryList entries={entries} column={col} />
                   </Card>
                 </Grid>
               ))}

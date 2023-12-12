@@ -1,4 +1,4 @@
-import { Entry } from "@/interfaces";
+import { Column, Entry } from "@/interfaces";
 
 import { FC } from "react";
 import { Draggable } from "react-beautiful-dnd";
@@ -20,17 +20,39 @@ import {
 
 import { getTimeAgo } from "@/utils/date";
 import { useRouter } from "next/router";
+import { useDeleteEntry } from "@/hooks/useEntries";
+import { useGetColumns, useUpdateColumn } from "@/hooks/useColumns";
 
 interface Props {
   entry?: Entry;
   index: number;
+  column: Column;
 }
 
-const EntryCard: FC<Props> = ({ entry, index }) => {
+const EntryCard: FC<Props> = ({ entry, index, column }) => {
   const router = useRouter();
+
+  const { mutate: deleteEntry } = useDeleteEntry();
+  const { mutate: updateColumn } = useUpdateColumn();
+  const { refetch: refetchColumns } = useGetColumns();
 
   const onEdit = () => {
     router.push(`/entries/${entry!._id}`);
+  };
+
+  const onDelete = () => {
+    deleteEntry(entry!._id);
+
+    setTimeout(() => {
+      updateColumn({
+        columnId: column._id,
+        entriesIds: column.entriesIds.filter((id) => id !== entry!._id),
+      });
+    }, 1500);
+
+    setTimeout(() => {
+      refetchColumns();
+    }, 1500);
   };
 
   return (
@@ -68,7 +90,11 @@ const EntryCard: FC<Props> = ({ entry, index }) => {
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Delete">
-                    <IconButton aria-label="Delete" size="small">
+                    <IconButton
+                      aria-label="Delete"
+                      size="small"
+                      onClick={onDelete}
+                    >
                       <DeleteIcon />
                     </IconButton>
                   </Tooltip>

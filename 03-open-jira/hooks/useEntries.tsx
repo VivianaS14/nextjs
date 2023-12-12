@@ -6,6 +6,7 @@ import { EntryUpdate } from "../interfaces/entry";
 
 const keys = {
   getEntries: ["entries"] as const,
+  getEntry: (entryId?: string) => ["entry", entryId],
 } as const;
 
 export function useGetEntries() {
@@ -37,6 +38,31 @@ export function useUpdateEntry() {
       const { data } = await jiraApi.put<Entry>(
         apiUrls.entries.updateEntry(entryId),
         { status, description }
+      );
+      return data;
+    },
+  });
+}
+
+export function useGetEntry(entryId?: string) {
+  return useQuery({
+    enabled: Boolean(entryId),
+    queryFn: async (): Promise<Entry> => {
+      if (!entryId) throw new Error("Invalid id");
+      const { data } = await jiraApi.get<Entry>(
+        apiUrls.entries.getEntry(entryId)
+      );
+      return data;
+    },
+    queryKey: keys.getEntry(entryId),
+  });
+}
+
+export function useDeleteEntry() {
+  return useMutation({
+    mutationFn: async (entryId: string) => {
+      const { data } = await jiraApi.delete(
+        apiUrls.entries.deleteEntry(entryId)
       );
       return data;
     },

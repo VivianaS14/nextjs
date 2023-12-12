@@ -8,8 +8,10 @@ export const jiraApi = axios.create({
 export const apiUrls = {
   entries: {
     getAll: "/entries",
+    getEntry: (entryId: string) => `/entries/${entryId}`,
     postEntry: "/entries",
     updateEntry: (entryId: string) => `/entries/${entryId}`,
+    deleteEntry: (entryId: string) => `/entries/${entryId}`,
   },
   columns: {
     getAll: "/columns",

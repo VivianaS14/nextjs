@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { List, Paper, Stack } from "@mui/material";
 
 import { EntriesContext } from "@/context/entries";
-import { Entry, EntryStatus } from "@/interfaces";
+import { Column, Entry, EntryStatus } from "@/interfaces";
 
 import { Droppable } from "react-beautiful-dnd";
 
@@ -13,26 +13,25 @@ const EntryCard = dynamic(() => import("@/components/ui/EntryCard"), {
 });
 
 interface Props {
-  status: string;
-  order: string[];
   entries?: Entry[];
+  column: Column;
 }
 
-const EntryList: FC<Props> = ({ status, order, entries }) => {
+const EntryList: FC<Props> = ({ column, entries }) => {
   // const { entries } = useContext(EntriesContext);
 
   // Solamente se debe ejecutar cuando las entries cambien
   const entriesByStatus = useMemo(
     () =>
-      order
+      column.entriesIds
         .map((id) => entries?.find((entry) => entry._id === id))
         .filter(Boolean),
-    [entries, order]
+    [entries, column]
   );
 
   return (
     entries && (
-      <Droppable droppableId={status}>
+      <Droppable droppableId={column.title}>
         {(provided, { isDraggingOver }) => (
           <Stack
             sx={{
@@ -47,7 +46,12 @@ const EntryList: FC<Props> = ({ status, order, entries }) => {
           >
             <List sx={{ opacity: 1 }}>
               {entriesByStatus.map((entry, index) => (
-                <EntryCard key={entry?._id} entry={entry} index={index} />
+                <EntryCard
+                  key={entry?._id}
+                  entry={entry}
+                  index={index}
+                  column={column}
+                />
               ))}
               {provided.placeholder}
             </List>
