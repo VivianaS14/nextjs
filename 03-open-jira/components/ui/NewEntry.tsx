@@ -1,4 +1,10 @@
-import { ChangeEvent, useState, useContext } from "react";
+import {
+  ChangeEvent,
+  useState,
+  useContext,
+  Dispatch,
+  SetStateAction,
+} from "react";
 
 import { EntriesContext } from "@/context/entries";
 import { UIContext } from "@/context/ui";
@@ -6,10 +12,29 @@ import { UIContext } from "@/context/ui";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import SaveIcon from "@mui/icons-material/Save";
 import { Box, Button, TextField } from "@mui/material";
+import { useSaveEntry } from "@/hooks/useEntries";
+import { useUpdateColumn } from "@/hooks/useColumns";
+import { Column, Entry } from "@/interfaces";
 
-export const NewEntry = () => {
-  const { addNewEntry } = useContext(EntriesContext);
+interface Props {
+  column: Column;
+  refetchEntries: () => void;
+  refetchColumns: () => void;
+}
+
+export const NewEntry = ({ column, refetchColumns, refetchEntries }: Props) => {
+  // const { addNewEntry } = useContext(EntriesContext);
   const { isAddingNewEntry, setIsAddingEntry } = useContext(UIContext);
+
+  const { mutate: updateColumn } = useUpdateColumn();
+  const { mutate: addNewEntry } = useSaveEntry((entry) => {
+    updateColumn({
+      columnId: column._id,
+      entriesIds: [...column.entriesIds, entry._id],
+    });
+    refetchColumns();
+    refetchEntries();
+  });
 
   const [entryValue, setEntryValue] = useState("");
   const [touched, setTouched] = useState(false);
