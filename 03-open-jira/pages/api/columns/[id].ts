@@ -45,8 +45,6 @@ const updateColumn = async (
 
   const { entriesIds } = req.body;
 
-  console.log({ id, entriesIds });
-
   try {
     const updatedColumn = await Column.findByIdAndUpdate(
       id,

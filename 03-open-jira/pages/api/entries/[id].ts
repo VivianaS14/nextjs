@@ -43,12 +43,12 @@ const updateEntry = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       .json({ message: "There's no data match the criteria" + id });
   }
 
-  const { status } = req.body;
+  const { status, description } = req.body;
 
   try {
     const updatedEntry = await Entry.findByIdAndUpdate(
       id,
-      { status },
+      { status, description },
       { runValidators: true, new: true }
     );
     // 2da forma de actualizarlo
