@@ -6,6 +6,9 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { UIProvider } from "@/context/ui";
 import { EntriesProvider } from "@/context/entries";
 
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
+
 import { darkTheme, lightTheme } from "@/themes";
 
 const ubuntu = Tilt_Neon({
@@ -15,9 +18,18 @@ const ubuntu = Tilt_Neon({
   variable: "--font-ubuntu",
 });
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <EntriesProvider>
+    <QueryClientProvider client={queryClient}>
+      {/* <EntriesProvider> */}
       <UIProvider>
         <ThemeProvider theme={darkTheme}>
           <CssBaseline />
@@ -26,6 +38,8 @@ export default function App({ Component, pageProps }: AppProps) {
           </main>
         </ThemeProvider>
       </UIProvider>
-    </EntriesProvider>
+      {/* </EntriesProvider> */}
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
