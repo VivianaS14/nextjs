@@ -1,6 +1,6 @@
 import { Column, Entry } from "@/interfaces";
 
-import { FC } from "react";
+import { FC, useContext } from "react";
 import { Draggable } from "react-beautiful-dnd";
 
 import {
@@ -22,6 +22,7 @@ import { getTimeAgo } from "@/utils/date";
 import { useRouter } from "next/router";
 import { useDeleteEntry } from "@/hooks/useEntries";
 import { useGetColumns, useUpdateColumn } from "@/hooks/useColumns";
+import { EntriesContext } from "@/context/entries";
 
 interface Props {
   entry?: Entry;
@@ -30,29 +31,16 @@ interface Props {
 }
 
 const EntryCard: FC<Props> = ({ entry, index, column }) => {
-  const router = useRouter();
+  const { deleteEntry } = useContext(EntriesContext);
 
-  const { mutate: deleteEntry } = useDeleteEntry();
-  const { mutate: updateColumn } = useUpdateColumn();
-  const { refetch: refetchColumns } = useGetColumns();
+  const router = useRouter();
 
   const onEdit = () => {
     router.push(`/entries/${entry!._id}`);
   };
 
   const onDelete = () => {
-    deleteEntry(entry!._id);
-
-    setTimeout(() => {
-      updateColumn({
-        columnId: column._id,
-        entriesIds: column.entriesIds.filter((id) => id !== entry!._id),
-      });
-    }, 1500);
-
-    setTimeout(() => {
-      refetchColumns();
-    }, 1500);
+    deleteEntry(entry!._id, column);
   };
 
   return (

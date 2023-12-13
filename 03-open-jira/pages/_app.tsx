@@ -29,16 +29,16 @@ const queryClient = new QueryClient({
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
-      {/* <EntriesProvider> */}
-      <UIProvider>
-        <ThemeProvider theme={darkTheme}>
-          <CssBaseline />
-          <main className={ubuntu.className}>
-            <Component {...pageProps} />
-          </main>
-        </ThemeProvider>
-      </UIProvider>
-      {/* </EntriesProvider> */}
+      <EntriesProvider>
+        <UIProvider>
+          <ThemeProvider theme={darkTheme}>
+            <CssBaseline />
+            <main className={ubuntu.className}>
+              <Component {...pageProps} />
+            </main>
+          </ThemeProvider>
+        </UIProvider>
+      </EntriesProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

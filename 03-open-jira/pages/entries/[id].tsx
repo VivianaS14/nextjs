@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
 import { getTimeAgo } from "@/utils/date";
@@ -23,14 +23,14 @@ import { getTimeAgo } from "@/utils/date";
 import { useGetEntry, useUpdateEntry } from "@/hooks/useEntries";
 import { useGetColumns, useUpdateColumn } from "@/hooks/useColumns";
 import { Column } from "@/interfaces";
+import { EntriesContext } from "@/context/entries";
 
 export const EntryPage = () => {
+  const { columns, updateColumn, updateEntry } = useContext(EntriesContext);
+
   const router = useRouter();
 
   const { data: entry } = useGetEntry(router.query.id?.toString());
-  const { mutate: updateEntry } = useUpdateEntry();
-  const { data: dbColumns } = useGetColumns();
-  const { mutate: updateColumn } = useUpdateColumn();
 
   const [inputValue, setInputValue] = useState<string>("");
   const [radioValue, setRadioValue] = useState<string>("");
@@ -45,51 +45,55 @@ export const EntryPage = () => {
   };
 
   const onSave = () => {
-    const columnIndex = Object.values(dbColumns!).findIndex(
-      (col) => col._id === radioValue
-    );
-    const entriesIds = dbColumns![columnIndex].entriesIds;
+    const columnIndex = columns.findIndex((col) => col._id === radioValue);
+    const entriesIds = columns[columnIndex].entriesIds;
 
     if (radioValue !== prevColumn) {
-      const prevColumnIndex = Object.values(dbColumns!).findIndex(
+      const prevColumnIndex = columns.findIndex(
         (col) => col._id === prevColumn
       );
 
-      const prevEntriesIds = dbColumns![prevColumnIndex].entriesIds;
+      const prevEntriesIds = columns[prevColumnIndex].entriesIds;
       prevEntriesIds.splice(prevEntriesIds.indexOf(entry!._id), 1);
 
       updateColumn({ columnId: prevColumn, entriesIds: prevEntriesIds });
 
-      setTimeout(() => {
-        updateColumn({
-          columnId: radioValue,
-          entriesIds: [...entriesIds, entry!._id],
-        });
-      }, 1500);
+      updateEntry({
+        description: inputValue,
+        status: columns[columnIndex].title,
+        entryId: entry!._id,
+      });
+
+      updateColumn({
+        columnId: radioValue,
+        entriesIds: [entry!._id, ...entriesIds],
+      });
+
+      router.push("/");
+
+      return;
     }
 
     updateEntry({
       description: inputValue,
-      status: dbColumns![columnIndex].title,
+      status: columns[columnIndex].title,
       entryId: entry!._id,
     });
 
-    setTimeout(() => {
-      router.push("/");
-    }, 2000);
+    router.push("/");
   };
 
   useEffect(() => {
-    if (entry && dbColumns) {
+    if (entry && columns) {
       setInputValue(entry.description.trim());
 
-      const columnIndex = Object.values(dbColumns!).findIndex(
+      const columnIndex = columns.findIndex(
         (col) => col.title === entry.status
       );
-      setRadioValue(dbColumns[columnIndex]._id);
-      setPrevColumn(dbColumns[columnIndex]._id);
+      setRadioValue(columns[columnIndex]._id);
+      setPrevColumn(columns[columnIndex]._id);
     }
-  }, [entry, dbColumns]);
+  }, [entry, columns]);
 
   return (
     entry && (
@@ -123,8 +127,8 @@ export const EntryPage = () => {
                     onChange={handleChangeRadioValue}
                     sx={{ display: "flex", flexDirection: "row", mt: 2 }}
                   >
-                    {dbColumns &&
-                      Object.values(dbColumns).map((column) => (
+                    {columns &&
+                      Object.values(columns).map((column) => (
                         <FormControlLabel
                           key={column._id}
                           value={column._id}

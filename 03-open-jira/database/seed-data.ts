@@ -1,9 +1,13 @@
-import { Columns } from "@/interfaces";
-
 interface SeedEntry {
   description: string;
   status: string;
   createdAt: number;
+}
+
+interface SeedColumn {
+  columnId: number;
+  title: string;
+  entriesIds: string[];
 }
 
 export const seedData: SeedEntry[] = [
@@ -15,23 +19,23 @@ export const seedData: SeedEntry[] = [
   },
 ];
 
-export const seedColumns = {
-  pending: {
+export const seedColumns: SeedColumn[] = [
+  {
     columnId: 0,
     title: "Pending",
     entriesIds: [],
   },
-  "in-progress": {
+  {
     columnId: 1,
-    title: "In-progress",
+    title: "In-Progress",
     entriesIds: [],
   },
-  finished: {
+  {
     columnId: 2,
     title: "Finished",
     entriesIds: [],
   },
-};
+];
 
 export const seedJira = {
   entries: [

@@ -1,18 +1,26 @@
 import { useEffect, useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-import { Column, Columns, Entry } from "@/interfaces";
+import { Column, ColumnUpdate, Entry, EntryUpdate } from "@/interfaces";
 import { EntriesContext, entriesReducer } from "./";
 import { jiraApi } from "@/api";
+import {
+  useDeleteEntry,
+  useGetEntries,
+  useSaveEntry,
+  useUpdateEntry,
+} from "@/hooks/useEntries";
+import { useGetColumns, useUpdateColumn } from "@/hooks/useColumns";
+import { seedColumns } from "@/database";
 
 export interface EntriesState {
   entries: Entry[];
-  columns: Columns;
+  columns: Column[];
 }
 
 const Entries_INITIAL_STATE: EntriesState = {
   entries: [],
-  columns: {},
+  columns: [],
 };
 
 export const EntriesProvider = ({
@@ -22,74 +30,135 @@ export const EntriesProvider = ({
 }) => {
   const [state, dispatch] = useReducer(entriesReducer, Entries_INITIAL_STATE);
 
-  const addNewEntry = async (description: string) => {
-    const { data } = await jiraApi.post<Entry>("/entries", { description });
-    dispatch({ type: "[Entry] Add-Entry", payload: data });
-  };
+  const { data: dbEntries, isFetching: isLoadingEntries } = useGetEntries();
+  const { data: dbColumns, isFetching: isLoadingColumns } = useGetColumns();
 
-  const updateEntry = async (id: string, status: string) => {
-    try {
-      await jiraApi.put<Entry>(`/entries/${id}`, { status });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const { mutate: addNewEntry } = useSaveEntry(
+    (entry) => {
+      dispatch({ type: "[Entry] Add-Entry", payload: entry });
+      dispatch({ type: "[Column] Add-EntryId", payload: entry._id });
 
-  const setColumns = async (colId: string, entriesIds: string[]) => {
-    const index = Object.values(state.columns).findIndex(
-      (c: Column) => c._id === colId
-    );
-
-    const cols: Columns = {
-      ...state.columns,
-      [index]: { ...state.columns[index], entriesIds },
-    };
-
-    dispatch({ type: "[Column] Set-Columns", payload: cols });
-
-    try {
-      await jiraApi.put<Column>(`/columns/${colId}`, {
-        entriesIds,
+      const column = state.columns.find((col) => col.columnId === 0)!;
+      fnUpdateColumn({
+        columnId: column._id,
+        entriesIds: [...column.entriesIds, entry._id],
       });
-    } catch (error) {
-      console.log(error);
+    },
+    (error) => {
+      if (error.response.status === 400) {
+        const id = uuidv4();
+        dispatch({
+          type: "[Entry] Add-Entry",
+          payload: {
+            _id: id,
+            createdAt: Date.now(),
+            status: "Pending",
+            description: JSON.parse(error.config.data).description,
+          },
+        });
+        dispatch({ type: "[Column] Add-EntryId", payload: id });
+      }
     }
+  );
+
+  const { mutate: fnUpdateColumn, isLoading: isUpdatingColumn } =
+    useUpdateColumn();
+
+  const { mutate: fnUpdateEntry } = useUpdateEntry();
+
+  const { mutate: fnDeleteEntry } = useDeleteEntry();
+
+  const isLoadingApp = () => {
+    if (isLoadingEntries || isLoadingColumns) return true;
+    return false;
   };
 
-  const setEntries = async (newEntries: Entry[]) => {
-    dispatch({ type: "[Entries] Set-Entries", payload: newEntries });
+  const updateColumn = ({ columnId, entriesIds }: ColumnUpdate) => {
+    fnUpdateColumn({
+      columnId,
+      entriesIds,
+    });
+
+    dispatch({
+      type: "[Column] Update-EntriesId",
+      payload: { columnId, entriesIds },
+    });
   };
 
-  const refreshEntries = async () => {
-    const { data } = await jiraApi.get<Entry[]>("/entries");
-    setEntries(data);
+  const updateEntry = ({ description, status, entryId }: EntryUpdate) => {
+    fnUpdateEntry({ description, status, entryId });
+
+    dispatch({
+      type: "[Entry] Update-Entry",
+      payload: {
+        entryId,
+        description,
+        status,
+      },
+    });
   };
 
-  const refreshColumns = async () => {
-    const { data } = await jiraApi.get<Columns>("/columns");
-    dispatch({ type: "[Column] Set-Columns", payload: data });
+  const deleteEntry = (entryId: string, column: Column) => {
+    fnDeleteEntry(entryId);
+
+    updateColumn({
+      columnId: column._id,
+      entriesIds: column.entriesIds.filter((id) => id !== entryId),
+    });
+
+    dispatch({
+      type: "[Column] Update-EntriesId",
+      payload: {
+        columnId: column._id,
+        entriesIds: column.entriesIds.filter((id) => id !== entryId),
+      },
+    });
   };
 
   useEffect(() => {
-    refreshEntries();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (state.entries.length > 0) {
-      refreshColumns();
+    if (dbEntries)
+      dispatch({ type: "[Entries] Set-Entries", payload: dbEntries });
+    if (dbColumns) {
+      dispatch({ type: "[Column] Set-Columns", payload: dbColumns });
+    } else {
+      dispatch({
+        type: "[Column] Set-Columns",
+        payload: [
+          {
+            _id: uuidv4(),
+            columnId: 0,
+            title: "Pending",
+            entriesIds: [],
+          },
+          {
+            _id: uuidv4(),
+            columnId: 1,
+            title: "In-Progress",
+            entriesIds: [],
+          },
+          {
+            _id: uuidv4(),
+            columnId: 2,
+            title: "Finished",
+            entriesIds: [],
+          },
+        ],
+      });
     }
-  }, [state.entries]);
+  }, [dbEntries, dbColumns]);
 
   return (
     <EntriesContext.Provider
       value={{
         ...state,
+        isUpdatingColumn,
+
+        // Methods
+        isLoadingApp,
         addNewEntry,
         updateEntry,
-        setColumns,
-        setEntries,
-        refreshColumns,
+        deleteEntry,
+        updateColumn,
       }}
     >
       {children}

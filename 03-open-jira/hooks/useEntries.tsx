@@ -19,7 +19,10 @@ export function useGetEntries() {
   });
 }
 
-export function useSaveEntry(onSuccess: (entry: Entry) => void) {
+export function useSaveEntry(
+  onSuccess: (entry: Entry) => void,
+  onError: (error: any) => void
+) {
   return useMutation({
     mutationFn: async (description: string) => {
       const { data } = await jiraApi.post<Entry>(apiUrls.entries.postEntry, {
@@ -28,7 +31,7 @@ export function useSaveEntry(onSuccess: (entry: Entry) => void) {
       return data;
     },
     onSuccess,
-    retry: 2,
+    onError,
   });
 }
 

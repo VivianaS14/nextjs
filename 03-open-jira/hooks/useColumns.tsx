@@ -1,5 +1,5 @@
 import { apiUrls, jiraApi } from "@/api";
-import { Column, ColumnUpdate, Columns } from "@/interfaces";
+import { Column, ColumnUpdate } from "@/interfaces";
 import { useMutation, useQuery } from "react-query";
 
 const keys = {
@@ -8,8 +8,8 @@ const keys = {
 
 export function useGetColumns() {
   return useQuery({
-    queryFn: async (): Promise<Columns> => {
-      const { data } = await jiraApi.get<Columns>(apiUrls.columns.getAll);
+    queryFn: async (): Promise<Column[]> => {
+      const { data } = await jiraApi.get<Column[]>(apiUrls.columns.getAll);
       return data;
     },
     queryKey: keys.getColumns,
@@ -28,6 +28,6 @@ export function useUpdateColumn() {
       );
       return data;
     },
-    retry: 3,
+    retry: 2,
   });
 }

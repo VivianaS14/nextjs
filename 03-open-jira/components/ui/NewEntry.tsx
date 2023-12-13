@@ -16,25 +16,9 @@ import { useSaveEntry } from "@/hooks/useEntries";
 import { useUpdateColumn } from "@/hooks/useColumns";
 import { Column, Entry } from "@/interfaces";
 
-interface Props {
-  column: Column;
-  refetchEntries: () => void;
-  refetchColumns: () => void;
-}
-
-export const NewEntry = ({ column, refetchColumns, refetchEntries }: Props) => {
-  // const { addNewEntry } = useContext(EntriesContext);
+export const NewEntry = () => {
+  const { addNewEntry } = useContext(EntriesContext);
   const { isAddingNewEntry, setIsAddingEntry } = useContext(UIContext);
-
-  const { mutate: updateColumn } = useUpdateColumn();
-  const { mutate: addNewEntry } = useSaveEntry((entry) => {
-    updateColumn({
-      columnId: column._id,
-      entriesIds: [...column.entriesIds, entry._id],
-    });
-    refetchColumns();
-    refetchEntries();
-  });
 
   const [entryValue, setEntryValue] = useState("");
   const [touched, setTouched] = useState(false);

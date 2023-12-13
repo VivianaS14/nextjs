@@ -10,6 +10,6 @@ const columnSchema = new Schema({
 });
 
 const ColumnModel: Model<IColumn> =
-  mongoose.models.Column || mongoose.model<IColumn>("Column", columnSchema);
+  mongoose.models.Column || mongoose.model("Column", columnSchema);
 
 export default ColumnModel;

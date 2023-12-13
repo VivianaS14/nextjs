@@ -1,16 +1,17 @@
-import { Column, Columns, Entry } from "@/interfaces";
+import { Column, ColumnUpdate, Entry, EntryUpdate } from "@/interfaces";
 import { createContext } from "react";
 
 interface ContextProps {
   entries: Entry[];
-  columns: Columns;
+  columns: Column[];
+  isUpdatingColumn: boolean;
 
   // Methods
+  isLoadingApp: () => boolean;
   addNewEntry: (description: string) => void;
-  updateEntry: (id: string, status: string) => void;
-  setColumns: (colId: string, entriesIds: string[]) => void;
-  setEntries: (newEntries: Entry[]) => void;
-  refreshColumns: () => void;
+  updateColumn: (props: ColumnUpdate) => void;
+  updateEntry: (props: EntryUpdate) => void;
+  deleteEntry: (entryId: string, column: Column) => void;
 }
 
 export const EntriesContext = createContext({} as ContextProps);
