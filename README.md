@@ -1,11 +1,17 @@
 # Next.js course from Udemy
 
-## 01-initial-demo
+## Initial Demo ./01-initial-demo
 
 Simple page to know router, and layouts.
 
-## 02-pokemon-static
+## Pokemon Static ./02-pokemon-static
 
-Simple Pokedex, styled with nextui, consuming api with axios, understanding static props and paths.
+Pokedex, styled with NextUI, fetching API with axios, understanding static props and paths.
 (SSG) -> Static Site Generation.
 (ISR) -> Incremental Site Regeneration
+
+## Open Jira ./03-open-jira
+
+Jira APP using data base with MongoDB and initialization with Docker.
+
+(To Run must be installed docket desktop)
